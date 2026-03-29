@@ -31,6 +31,8 @@ body {
     max-width: 900px;
     margin: 0 auto;
     padding: 20px;
+    border: 1.5px solid #e5e7eb !important;
+    border-radius: 10px;
 }
 
 /* Header */
