@@ -11,10 +11,8 @@ function getFormat(name) {
 function convert() {
     let input = document.getElementById('input').value.trim()
     let delimiter = document.getElementById('delimiter').value.trim()
-    let format = getFormat('format')
-
+    let format = getFormat ? getFormat('format') : (document.getElementById('format') ? document.getElementById('format').value : 'minified')
     let output = ''
-
     let rows = input.split(/\r?\n/)
     let rowsLength = rows.length
 
@@ -43,36 +41,67 @@ function convert() {
     }
 
     let copyButton = document.getElementById('copyButton')
-    copyButton.textContent = 'Copy'
+    if (copyButton) copyButton.textContent = 'Copy'
 }
 
-function copy() {
-    let output = document.getElementById('output')
+function convertJsonToCsv() {
+    let input = document.getElementById('json-input').value.trim()
+    let delimiter = document.getElementById('csv-delimiter').value.trim()
+    let output = ''
+    try {
+        let arr = JSON.parse(input)
+        if (!Array.isArray(arr) || arr.length === 0) {
+            document.getElementById('csv-output').value = ''
+            return
+        }
+        let keys = Object.keys(arr[0])
+        let lines = [keys.join(delimiter)]
+        for (let i = 0; i < arr.length; i++) {
+            let row = keys.map(k => {
+                let val = arr[i][k]
+                // Escape delimiter and quotes
+                if (typeof val === 'string' && (val.includes(delimiter) || val.includes('"') || val.includes('\n'))) {
+                    val = '"' + val.replace(/"/g, '""') + '"'
+                }
+                return val
+            })
+            lines.push(row.join(delimiter))
+        }
+        output = lines.join('\n')
+        document.getElementById('csv-output').value = output
+    } catch (e) {
+        document.getElementById('csv-output').value = ''
+    }
+    let copyButton = document.getElementById('copyCsvButton')
+    if (copyButton) copyButton.textContent = 'Copy'
+}
+
+function copy(id) {
+    let output = document.getElementById(id)
     let text = output.value
 
     // Use modern Clipboard API if available
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard.writeText(text).then(function() {
-            let copyButton = document.getElementById('copyButton')
-            copyButton.textContent = 'Copied'
+            let copyButton = (id === 'csv-output') ? document.getElementById('copyCsvButton') : document.getElementById('copyButton')
+            if (copyButton) copyButton.textContent = 'Copied'
         }).catch(function() {
-            // Fallback to old method
-            fallbackCopy(output)
+            fallbackCopy(output, id)
         });
     } else {
-        fallbackCopy(output)
+        fallbackCopy(output, id)
     }
 }
 
-function fallbackCopy(output) {
+function fallbackCopy(output, id) {
     output.select();
     output.setSelectionRange(0, 99999); /* For mobile devices */
     document.execCommand('copy');
     // Remove selection to prevent visual issues
     window.getSelection().removeAllRanges();
     output.blur();
-    let copyButton = document.getElementById('copyButton')
-    copyButton.textContent = 'Copied'
+    let copyButton = (id === 'csv-output') ? document.getElementById('copyCsvButton') : document.getElementById('copyButton')
+    if (copyButton) copyButton.textContent = 'Copied'
 }
 
 // Theme toggle logic
@@ -115,12 +144,26 @@ if (input && delimiter && format) {
     format.addEventListener('change', convert);
 }
 
+// JSON to CSV auto convert
+const jsonInput = document.getElementById('json-input');
+const csvDelimiter = document.getElementById('csv-delimiter');
+if (jsonInput && csvDelimiter) {
+    jsonInput.addEventListener('input', convertJsonToCsv);
+    csvDelimiter.addEventListener('input', convertJsonToCsv);
+}
+
 // Isi default input jika kosong saat halaman dimuat
 window.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('input');
     if (input && input.value.trim() === '') {
         input.value = `name,address\nAndi Saputra,Jl. Merdeka No. 10 Jakarta\nSiti Rahma,Jl. Sudirman No. 25 Bandung`;
         convert(); // langsung konversi agar output juga muncul
+    }
+    // JSON to CSV default
+    var jsonInput = document.getElementById('json-input');
+    if (jsonInput && jsonInput.value.trim() === '') {
+        jsonInput.value = '[{"name":"Andi Saputra","address":"Jl. Merdeka No. 10 Jakarta"},{"name":"Siti Rahma","address":"Jl. Sudirman No. 25 Bandung"}]';
+        convertJsonToCsv();
     }
 });
 

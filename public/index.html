@@ -46,42 +46,68 @@
     </div>
 
     <header>
-        <h1>CSV To JSON</h1>
-        <p>CSV To JSON Converter Tool</p>
+        <h1>CSV ⇄ JSON Converter</h1>
+        <p>Convert CSV to JSON and JSON to CSV easily. 100% client-side, no data sent to server.</p>
         <p class="client-side-note"><strong>100% Client-side:</strong> All processing is done in your browser. <u>No data is sent to any server.</u></p>
     </header>
 
     <div class="container">
-        <div class="form-group">
-            <label class="form-label" for="input">Input</label>
-            <div class="control">
-                <textarea class="form-input" placeholder="Type the input" id="input" rows="10"></textarea>
+        <div class="tabs">
+            <button class="tab-btn active" id="csv2json-tab" onclick="switchTab('csv2json')">CSV → JSON</button>
+            <button class="tab-btn" id="json2csv-tab" onclick="switchTab('json2csv')">JSON → CSV</button>
+        </div>
+        <div class="tab-content active" id="csv2json-content">
+            <div class="form-group">
+                <label class="form-label" for="input">CSV Input</label>
+                <div class="control">
+                    <textarea class="form-input" placeholder="name,address\nAndi Saputra,Jl. Merdeka No. 10 Jakarta\nSiti Rahma,Jl. Sudirman No. 25 Bandung" id="input" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="form-group form-inline" style="margin-bottom: 1.2rem;">
+                <div class="separator-group">
+                    <label class="form-label" for="delimiter">CSV Delimiter</label>
+                    <input class="form-input" placeholder="Type the csv delimiter" id="delimiter" value=",">
+                </div>
+                <div class="quotes-group">
+                    <label class="form-label" for="format">Format</label>
+                    <select class="form-input" id="format" name="format">
+                        <option value="minified">Minified</option>
+                        <option value="pretty">Pretty</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="output">JSON Output</label>
+                <div class="control">
+                    <textarea class="form-input" placeholder="The output" id="output" rows="10"></textarea>
+                </div>
+            </div>
+            <div class="btn-group btn-group-block">
+                <button class="btn btn-lg" type="button" onclick="copy('output')" id="copyButton">Copy</button>
             </div>
         </div>
-
-        <div class="form-group form-inline" style="margin-bottom: 1.2rem;">
-            <div class="separator-group">
-                <label class="form-label" for="delimiter">CSV Delimiter</label>
-                <input class="form-input" placeholder="Type the csv delimiter" id="delimiter" value=",">
+        <div class="tab-content" id="json2csv-content">
+            <div class="form-group">
+                <label class="form-label" for="json-input">JSON Input</label>
+                <div class="control">
+                    <textarea class="form-input" placeholder='[{"name":"Andi Saputra","address":"Jl. Merdeka No. 10 Jakarta"},{"name":"Siti Rahma","address":"Jl. Sudirman No. 25 Bandung"}]' id="json-input" rows="10"></textarea>
+                </div>
             </div>
-            <div class="quotes-group">
-                <label class="form-label" for="format">Format</label>
-                <select class="form-input" id="format" name="format">
-                    <option value="minified">Minified</option>
-                    <option value="pretty">Pretty</option>
-                </select>
+            <div class="form-group form-inline" style="margin-bottom: 1.2rem;">
+                <div class="separator-group">
+                    <label class="form-label" for="csv-delimiter">CSV Delimiter</label>
+                    <input class="form-input" placeholder="Type the csv delimiter" id="csv-delimiter" value=",">
+                </div>
             </div>
-        </div>
-
-        <div class="form-group">
-            <label class="form-label" for="output">Output</label>
-            <div class="control">
-                <textarea class="form-input" placeholder="The output" id="output" rows="10"></textarea>
+            <div class="form-group">
+                <label class="form-label" for="csv-output">CSV Output</label>
+                <div class="control">
+                    <textarea class="form-input" placeholder="The output" id="csv-output" rows="10"></textarea>
+                </div>
             </div>
-        </div>
-
-        <div class="btn-group btn-group-block">
-            <button class="btn btn-lg" type="button" onclick="copy()" id="copyButton">Copy</button>
+            <div class="btn-group btn-group-block">
+                <button class="btn btn-lg" type="button" onclick="copy('csv-output')" id="copyCsvButton">Copy</button>
+            </div>
         </div>
     </div>
 
@@ -93,5 +119,21 @@
     </footer>
 
     <script src="app.js"></script>
+    <script>
+    // Tab switching logic
+    function switchTab(tab) {
+        document.getElementById('csv2json-tab').classList.remove('active');
+        document.getElementById('json2csv-tab').classList.remove('active');
+        document.getElementById('csv2json-content').classList.remove('active');
+        document.getElementById('json2csv-content').classList.remove('active');
+        if (tab === 'csv2json') {
+            document.getElementById('csv2json-tab').classList.add('active');
+            document.getElementById('csv2json-content').classList.add('active');
+        } else {
+            document.getElementById('json2csv-tab').classList.add('active');
+            document.getElementById('json2csv-content').classList.add('active');
+        }
+    }
+    </script>
 </body>
 </html>
