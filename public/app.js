@@ -48,12 +48,29 @@ function convert() {
 
 function copy() {
     let output = document.getElementById('output')
+    let text = output.value
 
+    // Use modern Clipboard API if available
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function() {
+            let copyButton = document.getElementById('copyButton')
+            copyButton.textContent = 'Copied'
+        }).catch(function() {
+            // Fallback to old method
+            fallbackCopy(output)
+        });
+    } else {
+        fallbackCopy(output)
+    }
+}
+
+function fallbackCopy(output) {
     output.select();
     output.setSelectionRange(0, 99999); /* For mobile devices */
-
     document.execCommand('copy');
-
+    // Remove selection to prevent visual issues
+    window.getSelection().removeAllRanges();
+    output.blur();
     let copyButton = document.getElementById('copyButton')
     copyButton.textContent = 'Copied'
 }
@@ -102,7 +119,7 @@ if (input && delimiter && format) {
 window.addEventListener('DOMContentLoaded', function() {
     var input = document.getElementById('input');
     if (input && input.value.trim() === '') {
-        input.value = `name,address\nHeru,123 Main St Los Angeles CA\nBarra,456 Elm St New York NY`;
+        input.value = `name,address\nAndi Saputra,Jl. Merdeka No. 10 Jakarta\nSiti Rahma,Jl. Sudirman No. 25 Bandung`;
         convert(); // langsung konversi agar output juga muncul
     }
 });
