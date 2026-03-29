@@ -29,7 +29,7 @@
     <meta name="msapplication-TileColor" content="#5755d9">
     <meta name="msapplication-TileImage" content="icons/ms-icon-144x144.png">
 
-    <title>CSV To JSON</title>
+    <title>CSV ⇄ JSON</title>
 </head>
 <body>
     <div class="topbar">
@@ -47,7 +47,7 @@
 
     <header>
         <h1>CSV ⇄ JSON Converter</h1>
-        <p>Convert CSV to JSON and JSON to CSV easily. 100% client-side, no data sent to server.</p>
+        <p>Convert CSV to JSON and JSON to CSV easily.</p>
         <p class="client-side-note"><strong>100% Client-side:</strong> All processing is done in your browser. <u>No data is sent to any server.</u></p>
     </header>
 
@@ -71,8 +71,8 @@
                 <div class="quotes-group">
                     <label class="form-label" for="format">Format</label>
                     <select class="form-input" id="format" name="format">
-                        <option value="minified">Minified</option>
                         <option value="pretty">Pretty</option>
+                        <option value="minified">Minified</option>
                     </select>
                 </div>
             </div>
@@ -83,7 +83,8 @@
                 </div>
             </div>
             <div class="btn-group btn-group-block">
-                <button class="btn btn-lg" type="button" onclick="copy('output')" id="copyButton">Copy</button>
+                <button class="copy-btn" type="button" onclick="copy('output')" id="copyButton">Copy</button>
+                <button class="download-btn" type="button" onclick="download('output', 'output.json')" id="downloadJsonButton">Download</button>
             </div>
         </div>
         <div class="tab-content" id="json2csv-content">
@@ -106,7 +107,8 @@
                 </div>
             </div>
             <div class="btn-group btn-group-block">
-                <button class="btn btn-lg" type="button" onclick="copy('csv-output')" id="copyCsvButton">Copy</button>
+                <button class="copy-btn" type="button" onclick="copy('csv-output')" id="copyCsvButton">Copy</button>
+                <button class="download-btn" type="button" onclick="download('csv-output', 'output.csv')" id="downloadCsvButton">Download</button>
             </div>
         </div>
     </div>
@@ -133,6 +135,26 @@
             document.getElementById('json2csv-tab').classList.add('active');
             document.getElementById('json2csv-content').classList.add('active');
         }
+    }
+
+    // Download function
+    function download(elementId, fileName) {
+        const element = document.getElementById(elementId);
+        const content = element.value;
+        const blob = new Blob([content], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        setTimeout(() => {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }, 0);
     }
     </script>
 </body>
