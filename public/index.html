@@ -116,46 +116,12 @@
     <footer>
         <p>Created by <a href="https://herusdianto.github.io/" target="_blank" rel="noopener noreferrer">Heru Rusdianto</a> with AI Assistance</p>
         <p class="copyright">
-            © <span id="currentYear"></span> All rights reserved.
+            © <span id="currentYear"></span> All rights reserved
         </p>
     </footer>
 
     <script src="app.js"></script>
     <script>
-    // Tab switching logic
-    function switchTab(tab) {
-        document.getElementById('csv2json-tab').classList.remove('active');
-        document.getElementById('json2csv-tab').classList.remove('active');
-        document.getElementById('csv2json-content').classList.remove('active');
-        document.getElementById('json2csv-content').classList.remove('active');
-        if (tab === 'csv2json') {
-            document.getElementById('csv2json-tab').classList.add('active');
-            document.getElementById('csv2json-content').classList.add('active');
-        } else {
-            document.getElementById('json2csv-tab').classList.add('active');
-            document.getElementById('json2csv-content').classList.add('active');
-        }
-    }
-
-    // Download function
-    function download(elementId, fileName) {
-        const element = document.getElementById(elementId);
-        const content = element.value;
-        const blob = new Blob([content], { type: 'application/octet-stream' });
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup
-        setTimeout(() => {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-        }, 0);
-    }
     </script>
 </body>
 </html>

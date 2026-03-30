@@ -84,10 +84,10 @@ function copy(id) {
     let output = document.getElementById(id)
     let text = output.value
     if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function() {
+        navigator.clipboard.writeText(text).then(function () {
             let copyButton = (id === 'csv-output') ? document.getElementById('copyCsvButton') : document.getElementById('copyButton')
             if (copyButton) copyButton.textContent = 'Copied'
-        }).catch(function() {
+        }).catch(function () {
             fallbackCopy(output, id)
         });
     } else {
@@ -108,7 +108,7 @@ function fallbackCopy(output, id) {
 function download(elementId, fileName) {
     const element = document.getElementById(elementId);
     const content = element.value;
-    const blob = new Blob([content], { type: 'application/octet-stream' });
+    const blob = new Blob([content], {type: 'application/octet-stream'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -124,6 +124,7 @@ function download(elementId, fileName) {
 // Theme toggle logic
 const themeSwitchBtn = document.getElementById('theme-switch');
 const themeIcon = document.getElementById('theme-icon');
+
 function setTheme(dark) {
     if (dark) {
         document.documentElement.classList.add('dark-mode');
@@ -135,16 +136,34 @@ function setTheme(dark) {
         themeIcon.innerHTML = `<svg class="moon-icon" viewBox="0 0 24 24"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"></path></svg>`;
     }
 }
+
 function getThemePref() {
     return localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
 }
+
 function applyTheme() {
     const dark = getThemePref() === 'dark';
     setTheme(dark);
 }
+
+// Tab switching logic
+function switchTab(tab) {
+    document.getElementById('csv2json-tab').classList.remove('active');
+    document.getElementById('json2csv-tab').classList.remove('active');
+    document.getElementById('csv2json-content').classList.remove('active');
+    document.getElementById('json2csv-content').classList.remove('active');
+    if (tab === 'csv2json') {
+        document.getElementById('csv2json-tab').classList.add('active');
+        document.getElementById('csv2json-content').classList.add('active');
+    } else {
+        document.getElementById('json2csv-tab').classList.add('active');
+        document.getElementById('json2csv-content').classList.add('active');
+    }
+}
+
 if (themeSwitchBtn && themeIcon) {
     applyTheme();
-    themeSwitchBtn.addEventListener('click', function() {
+    themeSwitchBtn.addEventListener('click', function () {
         const dark = !document.documentElement.classList.contains('dark-mode');
         setTheme(dark);
         localStorage.setItem('theme', dark ? 'dark' : 'light');
@@ -169,8 +188,73 @@ if (jsonInput && csvDelimiter) {
     csvDelimiter.addEventListener('input', convertJsonToCsv);
 }
 
-// Isi default input jika kosong saat halaman dimuat
-window.addEventListener('DOMContentLoaded', function() {
+// Save & restore input for CSV to JSON
+function saveInput() {
+    const input = document.getElementById('input');
+    const delimiter = document.getElementById('delimiter');
+    const format = document.getElementById('format');
+    if (input) {
+        localStorage.setItem('csv2json_input', input.value);
+    }
+    if (delimiter) {
+        localStorage.setItem('csv2json_delimiter', delimiter.value);
+    }
+    if (format) {
+        localStorage.setItem('csv2json_format', format.value);
+    }
+}
+function restoreInput() {
+    const input = document.getElementById('input');
+    const delimiter = document.getElementById('delimiter');
+    const format = document.getElementById('format');
+    const saved = localStorage.getItem('csv2json_input');
+    const savedDelimiter = localStorage.getItem('csv2json_delimiter');
+    const savedFormat = localStorage.getItem('csv2json_format');
+    if (input && saved !== null) {
+        input.value = saved;
+    }
+    if (delimiter && savedDelimiter !== null) {
+        delimiter.value = savedDelimiter;
+    }
+    if (format && savedFormat !== null) {
+        format.value = savedFormat;
+    }
+    convert();
+}
+// Save & restore input for JSON to CSV
+function saveJsonInput() {
+    const input = document.getElementById('json-input');
+    const delimiter = document.getElementById('csv-delimiter');
+    if (input) {
+        localStorage.setItem('json2csv_input', input.value);
+    }
+    if (delimiter) {
+        localStorage.setItem('json2csv_delimiter', delimiter.value);
+    }
+}
+function restoreJsonInput() {
+    const input = document.getElementById('json-input');
+    const delimiter = document.getElementById('csv-delimiter');
+    const saved = localStorage.getItem('json2csv_input');
+    const savedDelimiter = localStorage.getItem('json2csv_delimiter');
+    if (input && saved !== null) {
+        input.value = saved;
+    }
+    if (delimiter && savedDelimiter !== null) {
+        delimiter.value = savedDelimiter;
+    }
+    convertJsonToCsv();
+}
+// Attach save on input events
+if (input) input.addEventListener('input', saveInput);
+if (delimiter) delimiter.addEventListener('input', saveInput);
+if (format) format.addEventListener('change', saveInput);
+if (jsonInput) jsonInput.addEventListener('input', saveJsonInput);
+if (csvDelimiter) csvDelimiter.addEventListener('input', saveJsonInput);
+// Restore on DOMContentLoaded
+window.addEventListener('DOMContentLoaded', function () {
+    restoreInput();
+    restoreJsonInput();
     var input = document.getElementById('input');
     if (input && input.value.trim() === '') {
         input.value = `name,address\nAndi Saputra,Jl. Merdeka No. 10 Jakarta\nSiti Rahma,Jl. Sudirman No. 25 Bandung`;
